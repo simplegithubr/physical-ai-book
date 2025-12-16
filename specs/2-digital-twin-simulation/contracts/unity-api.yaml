@@ -1,0 +1,425 @@
+# Unity API Contracts for Digital Twin Simulation
+
+openapi: 3.0.0
+info:
+  title: Unity Visualization API
+  version: 1.0.0
+  description: API for controlling Unity visualization and human-robot interaction
+  contact:
+    name: Visualization Team
+    email: visualization@digital-twin.edu
+
+paths:
+  /scenes/{scene_name}:
+    get:
+      summary: Get information about a Unity scene
+      parameters:
+        - name: scene_name
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Name of the Unity scene
+      responses:
+        '200':
+          description: Scene information retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SceneInfo'
+        '404':
+          description: Scene not found
+    put:
+      summary: Load or create a Unity scene
+      parameters:
+        - name: scene_name
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Scene loaded/created successfully
+        '400':
+          description: Invalid scene configuration
+        '500':
+          description: Unity engine error
+
+  /scenes/{scene_name}/objects:
+    get:
+      summary: Get list of objects in a scene
+      parameters:
+        - name: scene_name
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of objects retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SceneObject'
+    post:
+      summary: Create a new object in the scene
+      parameters:
+        - name: scene_name
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SceneObjectCreation'
+      responses:
+        '200':
+          description: Object created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SceneObject'
+        '400':
+          description: Invalid object configuration
+
+  /scenes/{scene_name}/objects/{object_id}:
+    get:
+      summary: Get information about a specific object
+      parameters:
+        - name: scene_name
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: object_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Object information retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SceneObject'
+        '404':
+          description: Object not found
+    patch:
+      summary: Update object properties
+      parameters:
+        - name: scene_name
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: object_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SceneObjectUpdate'
+      responses:
+        '200':
+          description: Object updated successfully
+        '400':
+          description: Invalid update parameters
+        '404':
+          description: Object not found
+
+  /scenes/{scene_name}/robot-control:
+    post:
+      summary: Send control commands to robot in scene
+      parameters:
+        - name: scene_name
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RobotControlCommand'
+      responses:
+        '200':
+          description: Control command sent successfully
+        '400':
+          description: Invalid control command
+        '404':
+          description: Robot not found in scene
+
+  /scenes/{scene_name}/synchronization:
+    post:
+      summary: Synchronize scene state with physics simulation
+      parameters:
+        - name: scene_name
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SynchronizationData'
+      responses:
+        '200':
+          description: Scene synchronized successfully
+        '400':
+          description: Invalid synchronization data
+        '500':
+          description: Synchronization failed
+
+components:
+  schemas:
+    SceneInfo:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Scene name
+        objects_count:
+          type: integer
+          description: Number of objects in the scene
+        lighting:
+          $ref: '#/components/schemas/LightingConfig'
+        camera_position:
+          type: array
+          items:
+            type: number
+          description: Camera position [x, y, z]
+        created_at:
+          type: string
+          format: date-time
+          description: When the scene was created
+      required:
+        - name
+        - objects_count
+        - lighting
+        - camera_position
+        - created_at
+
+    SceneObject:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique object identifier
+        name:
+          type: string
+          description: Display name of the object
+        type:
+          type: string
+          enum: [robot, obstacle, goal, interactive, terrain]
+          description: Type of object
+        position:
+          type: array
+          items:
+            type: number
+          description: Object position [x, y, z]
+        rotation:
+          type: array
+          items:
+            type: number
+          description: Object rotation as Euler angles [x, y, z]
+        scale:
+          type: array
+          items:
+            type: number
+          description: Object scale [x, y, z]
+        material:
+          $ref: '#/components/schemas/MaterialConfig'
+      required:
+        - id
+        - name
+        - type
+        - position
+        - rotation
+        - scale
+
+    SceneObjectCreation:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Display name of the object
+        type:
+          type: string
+          enum: [robot, obstacle, goal, interactive, terrain]
+          description: Type of object
+        position:
+          type: array
+          items:
+            type: number
+          description: Initial object position [x, y, z]
+          default: [0, 0, 0]
+        rotation:
+          type: array
+          items:
+            type: number
+          description: Initial object rotation as Euler angles [x, y, z]
+          default: [0, 0, 0]
+        scale:
+          type: array
+          items:
+            type: number
+          description: Object scale [x, y, z]
+          default: [1, 1, 1]
+        prefab:
+          type: string
+          description: Optional prefab to instantiate
+      required:
+        - name
+        - type
+
+    SceneObjectUpdate:
+      type: object
+      properties:
+        position:
+          type: array
+          items:
+            type: number
+          description: New object position [x, y, z]
+        rotation:
+          type: array
+          items:
+            type: number
+          description: New object rotation as Euler angles [x, y, z]
+        scale:
+          type: array
+          items:
+            type: number
+          description: New object scale [x, y, z]
+        material:
+          $ref: '#/components/schemas/MaterialConfig'
+
+    LightingConfig:
+      type: object
+      properties:
+        ambient_light:
+          type: number
+          description: Ambient light intensity (0.0 to 1.0)
+          default: 0.2
+        directional_light:
+          type: object
+          properties:
+            direction:
+              type: array
+              items:
+                type: number
+              description: Light direction [x, y, z]
+            intensity:
+              type: number
+              description: Light intensity
+          required:
+            - direction
+            - intensity
+        shadows:
+          type: boolean
+          description: Whether to enable shadows
+          default: true
+
+    MaterialConfig:
+      type: object
+      properties:
+        color:
+          type: array
+          items:
+            type: number
+          description: RGB color values [r, g, b] (0.0 to 1.0)
+        metallic:
+          type: number
+          description: Metallic property (0.0 to 1.0)
+        smoothness:
+          type: number
+          description: Smoothness property (0.0 to 1.0)
+        texture:
+          type: string
+          description: Optional texture asset name
+
+    RobotControlCommand:
+      type: object
+      properties:
+        robot_id:
+          type: string
+          description: ID of the robot to control
+        command_type:
+          type: string
+          enum: [move_to, rotate, velocity, joint_control, gripper_control]
+          description: Type of command
+        parameters:
+          type: object
+          description: Command-specific parameters
+          additionalProperties: true
+        timestamp:
+          type: string
+          format: date-time
+          description: When the command was issued
+      required:
+        - robot_id
+        - command_type
+        - parameters
+
+    SynchronizationData:
+      type: object
+      properties:
+        source:
+          type: string
+          enum: [gazebo, unity]
+          description: Source of the synchronization data
+        objects_state:
+          type: array
+          items:
+            $ref: '#/components/schemas/PhysicalObjectState'
+        timestamp:
+          type: string
+          format: date-time
+          description: When the synchronization data was captured
+      required:
+        - source
+        - objects_state
+        - timestamp
+
+    PhysicalObjectState:
+      type: object
+      properties:
+        object_id:
+          type: string
+          description: Unique identifier of the object
+        position:
+          type: array
+          items:
+            type: number
+          description: Object position [x, y, z]
+        rotation:
+          type: array
+          items:
+            type: number
+          description: Object rotation as quaternion [x, y, z, w]
+        velocity:
+          type: array
+          items:
+            type: number
+          description: Linear velocity [x, y, z]
+        angular_velocity:
+          type: array
+          items:
+            type: number
+          description: Angular velocity [x, y, z]
+      required:
+        - object_id
+        - position
+        - rotation

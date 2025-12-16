@@ -1,55 +1,42 @@
-# [PROJECT_NAME] Constitution
-<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
+<!--
+Sync Impact Report:
+- Version change: N/A -> 1.0.0
+- Modified principles: N/A (new constitution)
+- Added sections: All principles and sections
+- Removed sections: None
+- Templates requiring updates: N/A
+- Follow-up TODOs: None
+-->
+
+# Book + Embedded RAG Chatbot for Physical AI & Humanoid Robotics Constitution
 
 ## Core Principles
 
-### [PRINCIPLE_1_NAME]
-<!-- Example: I. Library-First -->
-[PRINCIPLE_1_DESCRIPTION]
-<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
+### Technical Accuracy
+All implementations must maintain technical accuracy with ROS 2, Gazebo, Unity, Isaac, VLA, and LLMs; Solutions must be verified using official documentation and reproduceable in real environments
 
-### [PRINCIPLE_2_NAME]
-<!-- Example: II. CLI Interface -->
-[PRINCIPLE_2_DESCRIPTION]
-<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
+### Student Clarity
+All content and code must be designed for clarity to CS/AI students; Complex concepts must be explained with tutorials, diagrams, and workflows that are easy to follow
 
-### [PRINCIPLE_3_NAME]
-<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
-[PRINCIPLE_3_DESCRIPTION]
-<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
+### Reproducible Code
+All code snippets and setups must be reproducible; Every example must be tested and verified to work in the intended environment
 
-### [PRINCIPLE_4_NAME]
-<!-- Example: IV. Integration Testing -->
-[PRINCIPLE_4_DESCRIPTION]
-<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
+### Source Verification
+All technical information must be verified using official documentation and authoritative sources before inclusion
 
-### [PRINCIPLE_5_NAME]
-<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
-[PRINCIPLE_5_DESCRIPTION]
-<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
+### Complete Integration
+The book and RAG chatbot must work as a complete integrated system covering all 4 modules: ROS 2 Nervous System, Digital Twin, NVIDIA Isaac AI-Robot Brain, and Vision-Language-Action
 
-### [PRINCIPLE_6_NAME]
+### No Hallucination Guarantee
+The RAG chatbot must answer only from book content or user-selected text with zero hallucinations; Strict adherence to source material is mandatory
 
+## Technology Stack Standards
+Book built with Docusaurus, deployed on GitHub Pages, written using Spec-Kit Plus + Claude Code; RAG chatbot uses OpenAI Agents/ChatKit, FastAPI, NeonDB, Qdrant; All examples use ROS 2, Python, Isaac, Nav2, Whisper
 
-[PRINCIPLE__DESCRIPTION]
-
-## [SECTION_2_NAME]
-<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
-
-[SECTION_2_CONTENT]
-<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
-
-## [SECTION_3_NAME]
-<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
-
-[SECTION_3_CONTENT]
-<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
+## Development Workflow
+All code must be tested with verified examples; Each module must include tutorials, diagrams, workflows, and simulations; End-to-end testing required for humanoid workflow: voice → plan → ROS 2 actions → simulation
 
 ## Governance
-<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
+All PRs/reviews must verify compliance with technical accuracy and reproducibility; Code must be tested in actual environments; Book content must be validated against official documentation; RAG chatbot must pass accuracy tests with zero hallucinations
 
-[GOVERNANCE_RULES]
-<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
-
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
-<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
+**Version**: 1.0.0 | **Ratified**: 2025-12-12 | **Last Amended**: 2025-12-12
