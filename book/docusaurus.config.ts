@@ -15,15 +15,15 @@ const config: Config = {
   },
 
   // Set the production url of your site here
-  url: 'https://simplegithubr.github.io',
+  url: 'https://specekit-yt-book.vercel.app', // Updated for Vercel deployment
   // Set the /<baseUrl>/ pathname under which your site is served
-  // For GitHub pages deployment, it is often '/<projectName>/'
-  baseUrl: '/physical-ai-book/',
+  // For Vercel deployment, use "/"
+  baseUrl: '/',
 
-  // GitHub pages deployment config.
-  // If you aren't using GitHub pages, you don't need these.
-  organizationName: 'simplegithubr', // Usually your GitHub org/user name.
-  projectName: 'physical-ai-book', // Usually your repo name.
+  // Vercel deployment config.
+  // These are not needed for Vercel deployment
+  // organizationName: 'simplegithubr', // Usually your GitHub org/user name.
+  // projectName: 'physical-ai-book', // Usually your repo name.
 
   onBrokenLinks: 'throw',
 
