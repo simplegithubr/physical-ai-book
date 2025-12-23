@@ -1,42 +1,39 @@
 <!--
 Sync Impact Report:
-- Version change: N/A -> 1.0.0
-- Modified principles: N/A (new constitution)
-- Added sections: All principles and sections
-- Removed sections: None
-- Templates requiring updates: N/A
+- Version change: 1.0.0 -> 1.1.0
+- Modified principles: All principles replaced with RAG-focused principles
+- Added sections: New principles for RAG chatbot project
+- Removed sections: Previous ROS 2/NVIDIA Isaac principles
+- Templates requiring updates: ✅ Updated
 - Follow-up TODOs: None
 -->
 
-# Book + Embedded RAG Chatbot for Physical AI & Humanoid Robotics Constitution
+# Integrated RAG Chatbot Development for Book Content Queries Constitution
 
 ## Core Principles
 
-### Technical Accuracy
-All implementations must maintain technical accuracy with ROS 2, Gazebo, Unity, Isaac, VLA, and LLMs; Solutions must be verified using official documentation and reproduceable in real environments
+### Content Accuracy and Context-Awareness
+All responses must be generated using book content only when specified; Responses must be contextually relevant and technically accurate to the source material; Zero hallucinations allowed when referencing book content.
 
-### Student Clarity
-All content and code must be designed for clarity to CS/AI students; Complex concepts must be explained with tutorials, diagrams, and workflows that are easy to follow
+### Resource Efficiency
+Leverage free tiers without exceeding limits; Optimize API usage and computational resources; Maintain cost-effective operations while preserving quality and performance.
 
-### Reproducible Code
-All code snippets and setups must be reproducible; Every example must be tested and verified to work in the intended environment
+### User-Centric Design
+Design intuitive interfaces for queries and text selection; Prioritize usability and accessibility in all user interactions; Ensure seamless experience for users querying book content.
 
-### Source Verification
-All technical information must be verified using official documentation and authoritative sources before inclusion
-
-### Complete Integration
-The book and RAG chatbot must work as a complete integrated system covering all 4 modules: ROS 2 Nervous System, Digital Twin, NVIDIA Isaac AI-Robot Brain, and Vision-Language-Action
-
-### No Hallucination Guarantee
-The RAG chatbot must answer only from book content or user-selected text with zero hallucinations; Strict adherence to source material is mandatory
+### Security and Privacy
+No storage of user data beyond sessions; Secure API keys and sensitive information; Protect user privacy through secure handling of queries and responses.
 
 ## Technology Stack Standards
-Book built with Docusaurus, deployed on GitHub Pages, written using Spec-Kit Plus + Claude Code; RAG chatbot uses OpenAI Agents/ChatKit, FastAPI, NeonDB, Qdrant; All examples use ROS 2, Python, Isaac, Nav2, Whisper
+
+All responses must be generated using Cohere APIs exclusively (no OpenAI fallback); Code modularity: Separate concerns (e.g., embedding pipeline, API endpoints, frontend UI); Tech stack: Cohere API, FastAPI, Neon Serverless Postgres, Qdrant; Testing rigor: Unit tests for retrieval accuracy (e.g., via cosine similarity thresholds in Qdrant) and integration tests for end-to-end flow.
 
 ## Development Workflow
-All code must be tested with verified examples; Each module must include tutorials, diagrams, workflows, and simulations; End-to-end testing required for humanoid workflow: voice → plan → ROS 2 actions → simulation
+
+All code must include proper documentation: Inline comments and README with setup instructions, including Cloud IDE deployment; Performance targets: Response time under 5 seconds; Scalability: Handle up to 100 concurrent users on free tiers; End-to-end testing required for retrieval-augmented generation flow.
 
 ## Governance
-All PRs/reviews must verify compliance with technical accuracy and reproducibility; Code must be tested in actual environments; Book content must be validated against official documentation; RAG chatbot must pass accuracy tests with zero hallucinations
 
-**Version**: 1.0.0 | **Ratified**: 2025-12-12 | **Last Amended**: 2025-12-12
+All PRs/reviews must verify compliance with content accuracy and resource efficiency; Code must be tested with proper unit and integration tests; Book content queries must pass accuracy tests with strict adherence to source material; RAG chatbot must maintain performance benchmarks and security standards.
+
+**Version**: 1.1.0 | **Ratified**: 2025-12-12 | **Last Amended**: 2025-12-19
