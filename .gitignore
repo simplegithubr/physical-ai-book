@@ -1,0 +1,59 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+.ENV
+.venv/
+*.env
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+.pytest_cache/
+.coverage
+htmlcov/
+.pyup.yml
+.isort.cfg
+.tox/
+noxfile.py
+*.rej
+.DS_Store
+Thumbs.db
+*.tmp
+*.log
+dist/
+build/
+*.egg-info/
+
+# Environment variables
+.env*
+
+# Local configuration
+*.local
+.settings/
+*.swp
+*.swo
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Icon?
+!Icon
+desktop.ini
+
+# Node.js (in case of frontend)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

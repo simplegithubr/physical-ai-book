@@ -1,0 +1,367 @@
+openapi: 3.0.3
+info:
+  title: RAG Chatbot API for Book Content Queries
+  description: API for querying Physical AI book content using Retrieval-Augmented Generation
+  version: 1.0.0
+  contact:
+    name: RAG Chatbot Development Team
+    email: team@specekit.com
+
+servers:
+  - url: https://rag-chatbot-api.example.com
+    description: Production server
+  - url: http://localhost:8000
+    description: Local development server
+
+paths:
+  /chat:
+    post:
+      summary: Process a chat query against book content
+      description: Generates a response based on book content, either from selected text or retrieved chunks
+      operationId: processChatQuery
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChatRequest'
+            example:
+              query: "What are the key principles of Physical AI?"
+              selected_text: "Physical AI combines robotics with artificial intelligence..."
+              history:
+                - role: "user"
+                  content: "Explain Physical AI"
+                - role: "assistant"
+                  content: "Physical AI is a field that combines..."
+              book_id: "physical-ai"
+      responses:
+        '200':
+          description: Successful response with answer and sources
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatResponse'
+              example:
+                response: "Physical AI combines robotics with artificial intelligence to create systems that can interact with the physical world intelligently..."
+                sources:
+                  - section: "Introduction to Physical AI"
+                    excerpt: "Physical AI is defined as the intersection of robotics and AI..."
+                    url: "https://book.physical-ai.com/docs/introduction"
+                    similarity_score: 0.85
+                query_id: "chat-12345"
+                timestamp: "2025-12-19T10:30:00Z"
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      security:
+        - api_key: []
+
+  /ingest:
+    post:
+      summary: Trigger book content ingestion
+      description: Starts the process of scraping and indexing book content from the source URL
+      operationId: triggerIngestion
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IngestRequest'
+            example:
+              source_url: "https://book.physical-ai.com"
+              force_reindex: false
+      responses:
+        '200':
+          description: Ingestion process started successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IngestResponse'
+              example:
+                status: "started"
+                job_id: "ingest-67890"
+                message: "Ingestion process initiated"
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      security:
+        - api_key: []
+
+  /health:
+    get:
+      summary: Health check endpoint
+      description: Returns the health status of the API and its dependencies
+      operationId: getHealthStatus
+      responses:
+        '200':
+          description: Health status of the API and its dependencies
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthCheck'
+              example:
+                status: "healthy"
+                timestamp: "2025-12-19T10:30:00Z"
+                services:
+                  cohere_api: true
+                  qdrant_db: true
+                  neon_db: true
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+components:
+  schemas:
+    ChatRequest:
+      type: object
+      required:
+        - query
+        - book_id
+      properties:
+        query:
+          type: string
+          description: The user's query about the book content
+          example: "What are the key principles of Physical AI?"
+          minLength: 1
+          maxLength: 2000
+        selected_text:
+          type: string
+          description: Optional text selected by the user for context
+          example: "Physical AI combines robotics with artificial intelligence..."
+          maxLength: 5000
+        history:
+          type: array
+          description: Previous conversation history
+          maxItems: 10
+          items:
+            type: object
+            required:
+              - role
+              - content
+            properties:
+              role:
+                type: string
+                enum: [user, assistant]
+                description: The role of the speaker in the conversation
+              content:
+                type: string
+                description: The content of the message
+        book_id:
+          type: string
+          description: The ID of the book to query (fixed to "physical-ai")
+          example: "physical-ai"
+          enum: ["physical-ai"]
+        temperature:
+          type: number
+          description: Temperature for response generation (0.0 to 1.0)
+          minimum: 0.0
+          maximum: 1.0
+          example: 0.7
+
+    ChatResponse:
+      type: object
+      required:
+        - response
+        - sources
+        - query_id
+        - timestamp
+      properties:
+        response:
+          type: string
+          description: The AI-generated response to the query
+          example: "Physical AI combines robotics with artificial intelligence to create systems that can interact with the physical world intelligently..."
+        sources:
+          type: array
+          description: Sources used to generate the response
+          maxItems: 8
+          items:
+            $ref: '#/components/schemas/Source'
+        query_id:
+          type: string
+          description: Unique identifier for the query
+          example: "chat-12345"
+        timestamp:
+          type: string
+          format: date-time
+          description: Timestamp when the response was generated
+          example: "2025-12-19T10:30:00Z"
+
+    Source:
+      type: object
+      required:
+        - section
+        - excerpt
+        - url
+        - similarity_score
+      properties:
+        section:
+          type: string
+          description: The section title where the source content appears
+          example: "Introduction to Physical AI"
+        excerpt:
+          type: string
+          description: A short excerpt of the source content
+          example: "Physical AI is defined as the intersection of robotics and AI..."
+        url:
+          type: string
+          format: uri
+          description: The URL where the source content can be found
+          example: "https://book.physical-ai.com/docs/introduction"
+        similarity_score:
+          type: number
+          format: float
+          description: The similarity score between the query and the source chunk (0.0 to 1.0)
+          minimum: 0.0
+          maximum: 1.0
+          example: 0.85
+
+    IngestRequest:
+      type: object
+      required:
+        - source_url
+      properties:
+        source_url:
+          type: string
+          format: uri
+          description: The URL of the book site to scrape and index
+          example: "https://book.physical-ai.com"
+        force_reindex:
+          type: boolean
+          description: Whether to force reindexing even if content exists
+          default: false
+
+    IngestResponse:
+      type: object
+      required:
+        - status
+        - job_id
+        - message
+      properties:
+        status:
+          type: string
+          enum: [started, completed, failed]
+          description: The status of the ingestion process
+        job_id:
+          type: string
+          description: Unique identifier for the ingestion job
+          example: "ingest-67890"
+        message:
+          type: string
+          description: A message describing the current state
+          example: "Ingestion process initiated"
+
+    HealthCheck:
+      type: object
+      required:
+        - status
+        - timestamp
+        - services
+      properties:
+        status:
+          type: string
+          enum: [healthy, degraded, unavailable]
+          description: Overall health status of the API
+        timestamp:
+          type: string
+          format: date-time
+          description: Timestamp when the health check was performed
+        services:
+          type: object
+          required:
+            - cohere_api
+            - qdrant_db
+            - neon_db
+          properties:
+            cohere_api:
+              type: boolean
+              description: Status of Cohere API connectivity
+            qdrant_db:
+              type: boolean
+              description: Status of Qdrant database connectivity
+            neon_db:
+              type: boolean
+              description: Status of Neon Postgres connectivity
+
+  responses:
+    BadRequest:
+      description: Bad request - invalid input parameters
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: "Invalid request parameters"
+            details: "Query must be provided and not empty"
+
+    ValidationError:
+      description: Validation error - request body doesn't match schema
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: "Validation failed"
+            details: "Query must be between 1 and 2000 characters"
+
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: "Internal server error"
+            details: "An unexpected error occurred"
+
+  securitySchemes:
+    api_key:
+      type: apiKey
+      in: header
+      name: X-API-Key
+      description: API key for authentication
+
+  parameters:
+    bookId:
+      name: book_id
+      in: path
+      required: true
+      schema:
+        type: string
+        enum: ["physical-ai"]
+      description: The ID of the book to query (fixed to "physical-ai")
+
+  examples:
+    chatQuery:
+      summary: Example chat query
+      value:
+        query: "What are the key principles of Physical AI?"
+        selected_text: null
+        history: []
+        book_id: "physical-ai"
+
+  headers:
+    X-RateLimit-Limit:
+      description: Request limit per hour
+      schema:
+        type: integer
+        example: 1000
+    X-RateLimit-Remaining:
+      description: Remaining requests in current window
+      schema:
+        type: integer
+        example: 999
+
+tags:
+  - name: chat
+    description: Chat query processing endpoints
+  - name: ingestion
+    description: Book content ingestion endpoints
+  - name: health
+    description: Health check endpoints
+
+externalDocs:
+  description: Documentation for the RAG Chatbot API
+  url: https://docs.physical-ai.com/api-reference
